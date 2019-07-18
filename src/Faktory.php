@@ -2,24 +2,19 @@
 
 class Faktory
 {
+    public static function create($type = "post", $args = []): object
+    {
+        return static::generate($type, $args, $save = true);
+    }
+
     /**
      * Returns are new object Faktory.
-     * @param array $params Array of properties and values to override.
+     * @param array $args Array of properties and values to override.
      * @return object
      */
-    public static function new($type = "post", $params = []): object
+    public static function new($type = "post", $args = []): object
     {
-        $params = array_merge(
-            static::loadFactory($type), $params
-        );
-
-        if (isset($params["class"])) {
-            $class = $params["class"];
-            unset($params["class"]);
-            return new $class($params);
-        }
-
-        return new FaktoryPost($params);
+        return static::generate($type, $args, $save = false);
     }
 
     /**
@@ -27,14 +22,32 @@ class Faktory
      * @param string $file name of faktory to load.
      * @return array
      */
-    protected static function loadFactory(string $file): array
+    protected static function loadFactory(string $file, array $args = []): array
     {
-        $root = realpath(dirname(dirname(__FILE__)));
+        $defaults = [];
+        $rootPath = realpath(dirname(dirname(__FILE__)));
 
-        if (file_exists($file = "{$root}/factories/{$file}.php")) {
-            return require $file;
+        if (file_exists($file = "{$rootPath}/factories/{$file}.php")) {
+            $defaults = require $file;
         }
 
-        return [];
+        return array_merge($defaults, $args);
+    }
+
+    protected static function generate($type, $args, $save)
+    {
+        $class = "FaktoryPost";
+        $args  = static::loadFactory($type, $args);
+
+        if (isset($args["class"])) {
+            $class = $args["class"];
+            unset($args["class"]);
+        }
+
+        if ($save && function_exists("\wp_insert_post")) {
+            $args["ID"] = wp_insert_post($args);
+        }
+
+        return new $class($args);
     }
 }
