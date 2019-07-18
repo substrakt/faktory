@@ -2,6 +2,12 @@
 
 class Faktory
 {
+    /**
+     * An array of directories to load factories from.
+     * @var array
+     */
+    public static $paths = [];
+
     public static function create($type = "post", $args = []): object
     {
         return static::generate($type, $args, $save = true);
@@ -25,10 +31,13 @@ class Faktory
     protected static function loadFactory(string $file, array $args = []): array
     {
         $defaults = [];
-        $rootPath = realpath(dirname(dirname(__FILE__)));
+        Faktory::$paths[] = dirname(__DIR__);
 
-        if (file_exists($file = "{$rootPath}/factories/{$file}.php")) {
-            $defaults = require $file;
+        foreach (array_unique(Faktory::$paths) as $path) {
+            if (file_exists($file = "{$path}/factories/{$file}.php")) {
+                $defaults = require $file;
+                return array_merge($defaults, $args);
+            }
         }
 
         return array_merge($defaults, $args);

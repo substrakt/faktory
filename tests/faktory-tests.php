@@ -102,4 +102,12 @@ class FaktoryTests extends FaktoryTestCase
             "Faktory should unset the class attribute of the factories it creates"
         );
     }
+
+    public function test_faktory_has_paths_property()
+    {
+        $this->assertTrue(
+            isset(Faktory::$paths),
+            "Faktory should have a public property \$paths"
+        );
+    }
 }
