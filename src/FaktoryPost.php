@@ -14,4 +14,13 @@ class FaktoryPost
         return new $class($this);
     }
 
+    public function save()
+    {
+        if (function_exists("\wp_insert_post")) {
+            $this->ID = \wp_insert_post($this);
+        }
+
+        return $this;
+    }
+
 }
