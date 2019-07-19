@@ -2,14 +2,10 @@
     "name": "substrakt/faktory",
     "description": "WordPress factories for Test-driven development.",
     "autoload": {
-        "psr-4": {
-            "Substrakt\\Faktory\\": ["src/"]
-        }
+        "classmap": ["src/"]
     },
     "autoload-dev": {
-        "psr-4": {
-            "Substrakt\\Faktory\\": ["tests/"]
-        }
+        "files": ["./tests/FaktoryTestCase.php"]
     },
     "require": {
         "php": ">=7.2.0"
