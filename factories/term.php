@@ -3,7 +3,7 @@
 return [
     "count"            => 0,
     "description"      => "",
-    "name"             => "",
+    "name"             => $faker->name,
     "parent"           => 0,
     "post_author"      => "",
     "slug"             => "",
