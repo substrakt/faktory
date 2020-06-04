@@ -6,15 +6,43 @@ class Faktory
      * An array of directories to load factories from.
      * @var array
      */
-    public static $paths = [];
+    public static $dirs = [];
 
+    /**
+     * Add the directory array of directories to search for factories.
+     *
+     * @param mixed string|array the directories to add
+     * @return array The directories
+     */
+    public static function addDirs($dirs): array
+    {
+        if (!is_array($dirs)) {
+            $dirs = [$dirs];
+        }
+
+        static::$dirs = array_unique(array_merge(static::$dirs, $dirs));
+
+        return static::$dirs;
+    }
+
+    /**
+     * Returns are new Faktory object.
+     * The object is saved to the database.
+     *
+     * @param string $type The name of the factory to load.
+     * @param array $args Array of properties and values to override.
+     * @return object
+     */
     public static function create($type = "post", $args = []): object
     {
         return static::generate($type, $args, $save = true);
     }
 
     /**
-     * Returns are new object Faktory.
+     * Returns are new Faktory object.
+     * The object is not saved to the database.
+     *
+     * @param string $type The name of the factory to load.
      * @param array $args Array of properties and values to override.
      * @return object
      */
@@ -31,30 +59,55 @@ class Faktory
     protected static function loadFactory(string $file, array $args = []): array
     {
         $defaults = [];
-        Faktory::$paths[] = dirname(__DIR__);
+        static::addDirs(dirname(__DIR__));
 
-        foreach (array_unique(Faktory::$paths) as $path) {
-            if (file_exists($file = "{$path}/factories/{$file}.php")) {
-                $defaults = require $file;
-                return array_merge($defaults, $args);
+        foreach (static::$dirs as $path) {
+            $path = rtrim($path, "/");
+
+            if (file_exists($fullPath = "{$path}/factories/{$file}.php")) {
+                # Create an instance of faker to use in factories
+                $faker = Faker\Factory::create();
+                # Require the factory
+                $defaults = require $fullPath;
+                # Merge the data in the factory with the data passed in via the test
+                $data = array_merge($defaults, $args);
+                # Loop through all the data in the factory, for all values that are arrays
+                # merge them with the data passed via the test
+                foreach ($defaults as $k => $v) {
+                    if (is_array($v) and isset($args[$k])) {
+                        $data[$k] = array_merge($defaults[$k], $args[$k]);
+                    }
+                }
+
+                return $data;
             }
         }
 
         return array_merge($defaults, $args);
     }
 
-    protected static function generate($type, $args, $save)
+    /**
+     * Loads the factory data and return the factory as a class.
+     *
+     * @param string $type the factory to load
+     * @param array $args the arguments passed from the test to overwite the defaults
+     * @param bool $save should the data be saved to the database
+     * @param object
+     */
+    protected static function generate(string $type, array $args, bool $save): object
     {
         $class = "FaktoryPost";
         $args  = static::loadFactory($type, $args);
 
+        # Use the class set via the args as the return class
         if (isset($args["class"])) {
             $class = $args["class"];
             unset($args["class"]);
         }
 
+        # Save the post to the database if desired
         if ($save && function_exists("\wp_insert_post")) {
-            $args["ID"] = wp_insert_post($args);
+            $args["ID"] = \wp_insert_post($args);
         }
 
         return new $class($args);
