@@ -117,3 +117,17 @@ return [
     "term_taxonomy_id" => 0,
 ];
 ```
+
+## Advanced Custom Field
+Currently support for Advanced Custom Fields is provided through the `meta_input` argument.
+```php
+$fixture = Faktory::create('page', [
+    'meta_input' => [
+        'masthead_image__color'  => '#000',
+        '_masthead_image__color' => 'field_5be99d501d261',
+    ]
+]);
+```
+Note the field reference (field_5be99d501d261) is not nessecary for primitive value types, but if you want ACF to return a different value type to what it stores then it is required. An example being ACF stores an integer for the **post_object** field but returns an instance of `WP_Post`.
+
+If you are having to do alot of `meta_input` work inside your tests, consider moving it to a factory file instead.
