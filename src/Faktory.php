@@ -96,20 +96,21 @@ class Faktory
      */
     protected static function generate(string $type, array $args, bool $save): object
     {
-        $class = "FaktoryPost";
-        $args  = static::loadFactory($type, $args);
+        $args    = static::loadFactory($type, $args);
+        $factory = new FaktoryPost($args);
+
+        # Save the post to the database if desired
+        if ($save) {
+            $factory->save();
+        }
 
         # Use the class set via the args as the return class
         if (isset($args["class"])) {
             $class = $args["class"];
             unset($args["class"]);
+            $factory =  new $class($args);
         }
 
-        # Save the post to the database if desired
-        if ($save && function_exists("\wp_insert_post")) {
-            $args["ID"] = \wp_insert_post($args);
-        }
-
-        return new $class($args);
+        return $factory;
     }
 }

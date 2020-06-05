@@ -3,7 +3,7 @@ $date = date("Y-m-d H:i:s");
 return [
     "comment_count"     => "",
     "comment_status"    => "",
-    "ID"                => 1,
+    "ID"                => 0,
     "meta_input"        => [],
     "menu_order"        => 0,
     "ping_status"       => "",
