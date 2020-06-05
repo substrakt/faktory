@@ -38,36 +38,37 @@ class FaktoryTests extends FaktoryTestCase
     {
         $args = [
             "ID"                => 10,
-            "post_author"       => '5', # Author ID is a string, classic WordPress.
-            "post_name"         => 'foo-bar',
-            "post_type"         => 'page',
-            "post_title"        => 'Foo Bar',
+            "post_author"       => "5", # Author ID is a string, classic WordPress.
+            "post_name"         => "foo-bar",
+            "post_type"         => "page",
+            "post_title"        => "Foo Bar",
             "post_date"         => date("Y-m-d H:i:s"),
             "post_date_gmt"     => date("Y-m-d H:i:s"),
-            "post_content"      => 'Foo bar baz',
-            "post_excerpt"      => 'Bar baz foo',
-            "post_status"       => 'publish',
-            "comment_status"    => 'closed',
-            "ping_status"       => 'closed',
-            "post_password"     => '',
+            "post_content"      => "Foo bar baz",
+            "post_excerpt"      => "Bar baz foo",
+            "post_status"       => "publish",
+            "comment_status"    => "closed",
+            "ping_status"       => "closed",
+            "post_password"     => "",
             "post_parent"       => 10,
             "post_modified"     => date("Y-m-d H:i:s"),
             "post_modified_gmt" => date("Y-m-d H:i:s"),
-            "comment_count"     => '',
-            "menu_order"        => '',
+            "comment_count"     => "",
+            "menu_order"        => "",
+            "meta_input"        => [],
         ];
 
         $this->assertEquals(
             $args[$property], # Expected result
-            Faktory::new('page', $args)->$property # Actual result
+            Faktory::new("page", $args)->$property # Actual result
         );
     }
 
     public function test_faktory_creates_FaktoryPost_object_by_default()
     {
         $this->assertTrue(
-            get_class(Faktory::new()) === 'FaktoryPost',
-            'Faktory::new should return a FaktoryPost object when no parameters are passed'
+            get_class(Faktory::new()) === "FaktoryPost",
+            "Faktory::new should return a FaktoryPost object when no parameters are passed"
         );
     }
 
@@ -103,11 +104,49 @@ class FaktoryTests extends FaktoryTestCase
         );
     }
 
-    public function test_faktory_has_paths_property()
+    public function test_faktory_has_dirs_property()
     {
         $this->assertTrue(
-            isset(Faktory::$paths),
-            "Faktory should have a public property \$paths"
+            isset(Faktory::$dirs),
+            "Faktory should have a public property \$dirs"
+        );
+    }
+
+    public function test_meta_input_is_correctly_merged()
+    {
+        Faktory::addDirs(__DIR__);
+
+        $post = Faktory::new("input", [
+            "meta_input" => [
+                "masthead__colour" => "#000"
+            ]
+        ]);
+
+        $this->assertTrue(
+            $post->meta_input['masthead__colour'] === "#000"
+            &&
+            # This are set in the 'input' factory
+            $post->meta_input['masthead__title'] === "This is the masthead title",
+            "Faktory should have a meta_input of '#000' for 'masthead__colour' and 'This is the masthead title' for 'masthead__title'"
+        );
+    }
+
+    public function test_tax_input_is_correctly_merged()
+    {
+        Faktory::addDirs(__DIR__);
+
+        $post = Faktory::new("input", [
+            "tax_input" => [
+                "categories" => ["foo", "bar"]
+            ]
+        ]);
+
+        $this->assertTrue(
+            $post->tax_input["categories"] === ["foo", "bar"]
+            &&
+            # These are set in the 'input' factory
+            $post->tax_input["tags"] === ["woz", "baz"],
+            "Faktory should have a tax_input ['categories' => 'foo', 'bar'] and ['tags' => 'woz', 'baz']"
         );
     }
 }
