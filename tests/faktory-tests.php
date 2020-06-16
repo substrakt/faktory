@@ -1,6 +1,8 @@
 <?php
 
-class FaktoryTests extends FaktoryTestCase
+namespace Faktory;
+
+class FaktoryTests extends TestCase
 {
     public function test_faktory_can_create_objects()
     {
@@ -23,7 +25,7 @@ class FaktoryTests extends FaktoryTestCase
     /**
      * @dataProvider wpPostPropertiesProvider
      */
-    public function test_faktory_created_FaktoryPost_objects_have_all_expected_properties($property)
+    public function test_faktory_created_Faktory_Post_objects_have_all_expected_properties($property)
     {
         $this->assertTrue(
             property_exists(Faktory::new(), $property),
@@ -34,7 +36,7 @@ class FaktoryTests extends FaktoryTestCase
     /**
      * @dataProvider wpPostPropertiesProvider
      */
-    public function test_faktory_created_FaktoryPost_object_properties_can_be_set($property)
+    public function test_faktory_created_Faktory_Post_object_properties_can_be_set($property)
     {
         $args = [
             "ID"                => 10,
@@ -64,37 +66,37 @@ class FaktoryTests extends FaktoryTestCase
         );
     }
 
-    public function test_faktory_creates_FaktoryPost_object_by_default()
+    public function test_faktory_creates_Faktory_Post_object_by_default()
     {
-        $this->assertTrue(
-            get_class(Faktory::new()) === "FaktoryPost",
+        $this->assertEquals(
+            "Faktory\Post", get_class(Faktory::new()),
             "Faktory::new should return a FaktoryPost object when no parameters are passed"
         );
     }
 
     public function test_loaded_factories_can_be_passed_into_class()
     {
-        $class = "FaktoryPage";
+        $class = "Faktory\Page";
 
-        $this->assertTrue(
-            get_class(Faktory::new()->as($class)) === $class,
+        $this->assertEquals(
+            $class, get_class(Faktory::new()->as($class)),
             "Faktory should return an object of the class {$class} when using the 'as' method."
         );
     }
 
     public function test_factories_that_have_a_class_attribute_are_returned_as_objects_of_that_class()
     {
-        $class = "FaktoryPage";
+        $class = "Faktory\Page";
 
-        $this->assertTrue(
-            get_class(Faktory::new("post", ["class" => $class])) === $class,
+        $this->assertEquals(
+            $class, get_class(Faktory::new("post", ["class" => $class])),
             "Faktory should return an object of the class {$class} when using the 'class' attribute."
         );
     }
 
     public function test_class_attribute_is_not_defined_on_created_object()
     {
-        $class = "FaktoryPage";
+        $class = "Faktory\Page";
 
         $this->assertFalse(
             isset(
@@ -148,5 +150,70 @@ class FaktoryTests extends FaktoryTestCase
             $post->tax_input["tags"] === ["woz", "baz"],
             "Faktory should have a tax_input ['categories' => 'foo', 'bar'] and ['tags' => 'woz', 'baz']"
         );
+    }
+
+    public function test_saving_a_factory_calls_wp_insert_post()
+    {
+        $fnc = $this->getFunctionMock(__NAMESPACE__, "wp_insert_post");
+        $fnc->expects($this->once())
+            ->willReturn(1);
+
+        $term = Faktory::new()->save();
+    }
+
+    public function test_an_excexption_is_raised_when_calling_wp_insert_post_fails()
+    {
+        $fnc = $this->getFunctionMock(__NAMESPACE__, "wp_insert_post");
+        $fnc->expects($this->once())
+            ->willReturn(new \stdClass);
+
+        $this->expectException(\Exception::class);
+
+        Faktory::new()->save();
+    }
+
+    /**
+     * @dataProvider wpTermPropertiesProvider
+     */
+    public function test_term_factory_is_loaded_with_correct_properties($data)
+    {
+        $term = Faktory::new("term");
+        $this->assertTrue(isset($term->$data));
+    }
+
+    public function test_faktory_creates_a_FaktoryTerm_object_by_default_for_terms()
+    {
+        $this->assertEquals(
+            "Faktory\Term", get_class(Faktory::new("term")),
+            "Faktory should return an object of the class \Faktory\Term by default."
+        );
+    }
+
+    public function test_saving_a_term_factory_calls_wp_insert_term()
+    {
+        $fnc = $this->getFunctionMock(__NAMESPACE__, "wp_insert_term");
+        $fnc->expects($this->once())
+            ->willReturn(["term_id" => 1, "term_taxonomy_id" => 2]);
+
+        $tax = $this->getFunctionMock(__NAMESPACE__, "taxonomy_exists");
+        $tax->expects($this->once())
+            ->willReturn(true);
+
+        $term = Faktory::new("term")->save();
+
+        $this->assertEquals(1, $term->ID);
+        $this->assertEquals(1, $term->term_id);
+        $this->assertEquals(2, $term->term_taxonomy_id);
+    }
+
+    public function test_an_excexption_is_raised_when_calling_wp_insert_term_fails()
+    {
+        $fnc = $this->getFunctionMock(__NAMESPACE__, "wp_insert_term");
+        $fnc->expects($this->once())
+            ->willReturn(new \stdClass);
+
+        $this->expectException(\Exception::class);
+
+        Faktory::new("term")->save();
     }
 }

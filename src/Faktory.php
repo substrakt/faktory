@@ -1,5 +1,7 @@
 <?php
 
+namespace Faktory;
+
 class Faktory
 {
     /**
@@ -66,7 +68,7 @@ class Faktory
 
             if (file_exists($fullPath = "{$path}/factories/{$file}.php")) {
                 # Create an instance of faker to use in factories
-                $faker = Faker\Factory::create();
+                $faker = \Faker\Factory::create();
                 # Require the factory
                 $defaults = require $fullPath;
                 # Merge the data in the factory with the data passed in via the test
@@ -97,7 +99,7 @@ class Faktory
     protected static function generate(string $type, array $args, bool $save): object
     {
         $args    = static::loadFactory($type, $args);
-        $factory = new FaktoryPost($args);
+        $factory = new Post($args);
 
         # Save the post to the database if desired
         if ($save) {

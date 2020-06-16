@@ -11,4 +11,5 @@ return [
     "term_group"       => 0,
     "term_id"          => 0,
     "term_taxonomy_id" => 0,
+    "class"            => "\Faktory\Term",
 ];
