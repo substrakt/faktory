@@ -27,14 +27,13 @@ As a shortcut to this there is the `create` method.
 $f = Faktory::create("page");
 ```
 
-## Return class
+## Pass the returned Faktory to a class
+`Faktory::new` or `Faktory::create` will return an object. This object mimics a WordPress post object or term object. It is common practise to create another object passing in a WP_Post object as a param.
 ```php
-$f = Faktory::new("page");
-$f->as("TheClassIWant");
-# Or in the args
-$f = Faktory::new("page", ["class" => "TheClassIWant"]);
+$f = Faktory::new("page")->as("TheClassIWant");
+# is equal to
+$f = new TheClassIWant(Faktory::new("page"));
 ```
-It is also possible the set the "class" property in the factory file.
 
 ## Add more factories
 Add a folder in your desired directory called `factories` then add the factories as PHP files. The factories must return an array. Next register the parent directory with
@@ -42,6 +41,12 @@ Add a folder in your desired directory called `factories` then add the factories
 Faktory::addDirs([
     "the/full/path/to/the/parent/dir"
 ]);
+
+```
+### The class attribute
+The class attribute defined on a class determines which Faktory object will be returned. Currently this is either a `Faktory\Post`, `Faktory\Page` or a `Faktory\Term`. If no class attribute is present a `Faktory\Post` is returned.
+```
+"class" => "\Faktory\Post"
 ```
 
 ## Default factories
@@ -70,6 +75,7 @@ return [
     "post_title"        => $faker->name,
     "post_type"         => "post",
     "tax_input"         => [],
+    "class"             => "\Faktory\Post",
 ];
 ```
 
@@ -98,6 +104,7 @@ return [
     "post_title"        => $faker->name,
     "post_type"         => "page",
     "tax_input"         => [],
+    "class"             => "\Faktory\Page",
 ];
 ```
 
@@ -115,6 +122,7 @@ return [
     "term_group"       => 0,
     "term_id"          => 0,
     "term_taxonomy_id" => 0,
+    "class"            => "\Faktory\Term",
 ];
 ```
 

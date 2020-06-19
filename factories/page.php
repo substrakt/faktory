@@ -21,4 +21,5 @@ return [
     "post_title"        => $faker->name,
     "post_type"         => "page",
     "tax_input"         => [],
+    "class"             => "\Faktory\Page",
 ];

@@ -1,6 +1,8 @@
 <?php
 
-class FaktoryPost
+namespace Faktory;
+
+class Term
 {
 
     /**
@@ -26,18 +28,26 @@ class FaktoryPost
     }
 
     /**
-     * Save the post into the database and return the instance
+     * Save the term into the database and return the instance
      * of the object
      *
      * @return object
      */
     public function save(): object
     {
-        if (function_exists("\wp_insert_post")) {
-            $this->ID = \wp_insert_post($this);
+        $result = wp_insert_term($this->name, $this->taxonomy, $this);
+
+        if (is_array($result)) {
+            if (!taxonomy_exists($this->taxonomy)) {
+                register_taxonomy($this->taxonomy, null);
+            }
+
+            $this->ID = $this->term_id = $result["term_id"];
+            $this->term_taxonomy_id = $result["term_taxonomy_id"];
+            return $this;
         }
 
-        return $this;
+        throw new \Exception("Faktory Term could not be saved to the database.");
     }
 
 }

@@ -1,8 +1,12 @@
 <?php
 
-abstract class FaktoryTestCase
-extends PHPUnit\Framework\TestCase
+namespace Faktory;
+
+abstract class TestCase
+extends \PHPUnit\Framework\TestCase
 {
+    use \phpmock\phpunit\PHPMock;
+
     public function wpPostPropertiesProvider()
     {
         return [
@@ -24,6 +28,21 @@ extends PHPUnit\Framework\TestCase
             ["post_modified_gmt"],
             ["comment_count"],
             ["menu_order"],
+        ];
+    }
+
+    public function wpTermPropertiesProvider()
+    {
+        return [
+            ["count"],
+            ["description"],
+            ["name"],
+            ["parent"],
+            ["slug"],
+            ["taxonomy"],
+            ["term_group"],
+            ["term_id"],
+            ["term_taxonomy_id"],
         ];
     }
 

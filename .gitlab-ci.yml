@@ -1,0 +1,11 @@
+image: registry.gitlab.com/substrakt/baseproject:latest
+
+stages:
+  - test
+
+test app:
+  stage: test
+  before_script:
+    - composer install --no-progress --no-scripts --no-suggest --ignore-platform-reqs
+  script:
+    - ./vendor/bin/phpunit --colors=never
