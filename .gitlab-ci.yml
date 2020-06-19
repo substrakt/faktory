@@ -1,5 +1,10 @@
 image: registry.gitlab.com/substrakt/baseproject:latest
 
+# Select what we should cache between builds
+cache:
+  paths:
+    - vendor
+
 stages:
   - test
 
@@ -8,4 +13,4 @@ test app:
   before_script:
     - composer install --no-progress --no-scripts --no-suggest --ignore-platform-reqs
   script:
-    - ./vendor/bin/phpunit --colors=never
+    - - vendor/bin/phpunit --configuration phpunit.xml --coverage-text --colors=never
