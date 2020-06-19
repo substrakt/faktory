@@ -26,4 +26,5 @@ return [
     "tax_input"         => [
         'tags' => ['woz', 'baz']
     ],
+    "class"            => "\Faktory\Post",
 ];

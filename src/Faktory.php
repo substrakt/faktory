@@ -98,19 +98,20 @@ class Faktory
      */
     protected static function generate(string $type, array $args, bool $save): object
     {
-        $args    = static::loadFactory($type, $args);
-        $factory = new Post($args);
-
-        # Save the post to the database if desired
-        if ($save) {
-            $factory->save();
-        }
+        $args = static::loadFactory($type, $args);
 
         # Use the class set via the args as the return class
         if (isset($args["class"])) {
             $class = $args["class"];
             unset($args["class"]);
             $factory =  new $class($args);
+        } else {
+            $factory = new Post($args);
+        }
+
+        # Save the post to the database if desired
+        if ($save) {
+            $factory->save();
         }
 
         return $factory;
