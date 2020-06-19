@@ -1,16 +1,8 @@
 image: registry.gitlab.com/substrakt/baseproject:latest
 
-services:
-  - mysql:5.7.21
-
-variables:
-  MYSQL_DATABASE: "wordpress"
-  MYSQL_ROOT_PASSWORD: "root"
-
 stages:
   - test
 
-# Job to run phpunit to run all test in the Childtheme.
 test app:
   stage: test
   before_script:
