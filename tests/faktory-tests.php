@@ -217,7 +217,11 @@ class FaktoryTests extends TestCase
         Faktory::new("term")->save();
     }
 
-    public function test_asking_for_an_undefined_factory_returns()
+    /**
+     * Foobar is a undefined factory, but a post factory should still be returned
+     * with the post_type change to 'foobar'
+     */
+    public function test_undefined_factory_returns_post_factory_with_post_type_changed()
     {
         $this->assertTrue(
             Faktory::new('foobar')->post_type === 'foobar',
