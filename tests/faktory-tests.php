@@ -216,4 +216,12 @@ class FaktoryTests extends TestCase
 
         Faktory::new("term")->save();
     }
+
+    public function test_asking_for_an_undefined_factory_returns()
+    {
+        $this->assertTrue(
+            Faktory::new('foobar')->post_type === 'foobar',
+            "Faktory::new should return a 'foobar' object when a type is passed"
+        );
+    }
 }

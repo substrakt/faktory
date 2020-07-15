@@ -60,15 +60,22 @@ class Faktory
      */
     protected static function loadFactory(string $file, array $args = []): array
     {
-        $defaults = [];
-        static::addDirs(dirname(__DIR__));
+        # Parent directory
+        $dir = dirname(__DIR__);
 
+        # Create an instance of faker to use in factories
+        $faker = \Faker\Factory::create();
+
+        # Add the parent directory to the list of directories
+        # where a factories folder can be found.
+        static::addDirs($dir);
+
+        # Loop through all of the directories to find the factor in
+        # all the registered factory directories
         foreach (static::$dirs as $path) {
             $path = rtrim($path, "/");
 
             if (file_exists($fullPath = "{$path}/factories/{$file}.php")) {
-                # Create an instance of faker to use in factories
-                $faker = \Faker\Factory::create();
                 # Require the factory
                 $defaults = require $fullPath;
                 # Merge the data in the factory with the data passed in via the test
@@ -85,7 +92,11 @@ class Faktory
             }
         }
 
-        return array_merge($defaults, $args);
+        # A factory can't be found
+        # Return a post factory but change the post_type to
+        # be that of the missing factory.
+        # This allows factories for custom post types to be easily created used.
+        return array_merge(require "{$dir}/factories/post.php", ['post_type' => $file], $args);
     }
 
     /**
