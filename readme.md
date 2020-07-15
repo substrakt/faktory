@@ -126,6 +126,13 @@ return [
 ];
 ```
 
+## Undefined factories
+Creating an undefined factories will create a factory of the type `page` but the post_type will be set to what was asked for.
+```
+$fixture = Faktory::new('foobar');
+$fixture->post_type #=> 'foobar'
+```
+
 ## Advanced Custom Field
 Currently support for Advanced Custom Fields is provided through the `meta_input` argument.
 ```php

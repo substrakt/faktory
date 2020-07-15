@@ -96,7 +96,7 @@ class Faktory
         # Return a post factory but change the post_type to
         # be that of the missing factory.
         # This allows factories for custom post types to be easily created used.
-        return array_merge(require "{$dir}/factories/post.php", ['post_type' => $file], $args);
+        return array_merge(require "{$dir}/factories/page.php", ['post_type' => $file], $args);
     }
 
     /**
