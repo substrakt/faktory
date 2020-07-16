@@ -1,13 +1,13 @@
 # Faktory
 
-## Create a new PostFaktory
+## Create a new Post factory
 ```php
 Faktory::new();
 # or
 Faktory::new("post");
 ```
 
-## Create a new PageFaktory
+## Create a new Page factory
 ```php
 Faktory::new("page");
 ```
@@ -44,9 +44,13 @@ Faktory::addDirs([
 
 ```
 ### The class attribute
-The class attribute defined on a class determines which Faktory object will be returned. Currently this is either a `Faktory\Post`, `Faktory\Page` or a `Faktory\Term`. If no class attribute is present a `Faktory\Post` is returned.
+The class attribute defined on a factory determines which Faktory object will be returned. Currently this is either a `Faktory\Post`, `Faktory\Page` or a `Faktory\Term`. If no class attribute is present a `Faktory\Post` is returned.
 ```
 "class" => "\Faktory\Post"
+```
+The `Faktory\Post` and `Faktory\Page` objects are identical other than in name. They exist as a way to help distinquish between the two post types. If you are creating term factories then it will be important tho specific the term class.
+```
+"class" => "\Faktory\Term"
 ```
 
 ## Default factories
@@ -126,6 +130,13 @@ return [
 ];
 ```
 
+## Undefined factories
+Creating an undefined factories will create a factory of the type `page` but the post_type will be set to what was asked for.
+```
+$fixture = Faktory::new('foobar');
+$fixture->post_type #=> 'foobar'
+```
+
 ## Advanced Custom Field
 Currently support for Advanced Custom Fields is provided through the `meta_input` argument.
 ```php
@@ -139,3 +150,16 @@ $fixture = Faktory::create('page', [
 Note the field reference (field_5be99d501d261) is not nessecary for primitive value types, but if you want ACF to return a different value type to what it stores then it is required. An example being ACF stores an integer for the **post_object** field but returns an instance of `WP_Post`.
 
 If you are having to do alot of `meta_input` work inside your tests, consider moving it to a factory file instead.
+
+## Contributing
+We'd love you to help out with Faktory and no contribution is too small.
+
+### Contributing code and documentation
+We loosely follow the
+[PSR-1](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md)
+and
+[PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md) coding standards,
+but we'll probably merge any code that looks close enough.
+
+---
+Development of Faktory is sponsored by [Substrakt](https://substrakt.com)
