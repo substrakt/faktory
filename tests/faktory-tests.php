@@ -191,15 +191,49 @@ class FaktoryTests extends TestCase
 
     public function test_saving_a_term_factory_calls_wp_insert_term()
     {
-        $fnc = $this->getFunctionMock(__NAMESPACE__, "wp_insert_term");
-        $fnc->expects($this->once())
-            ->willReturn(["term_id" => 1, "term_taxonomy_id" => 2]);
-
         $tax = $this->getFunctionMock(__NAMESPACE__, "taxonomy_exists");
         $tax->expects($this->once())
             ->willReturn(true);
 
+        $term = $this->getFunctionMock(__NAMESPACE__, "term_exists");
+        $term->expects($this->once())
+            ->willReturn(NULL);
+
+        $fnc = $this->getFunctionMock(__NAMESPACE__, "wp_insert_term");
+        $fnc->expects($this->once())
+            ->willReturn(["term_id" => 1, "term_taxonomy_id" => 2]);
+
         $term = Faktory::new("term")->save();
+
+        $this->assertEquals(1, $term->ID);
+        $this->assertEquals(1, $term->term_id);
+        $this->assertEquals(2, $term->term_taxonomy_id);
+    }
+
+    /**
+     * The term only stored in the database once
+     */
+    public function test_terms_can_be_created_more_than_once()
+    {
+        $fnc = $this->getFunctionMock(__NAMESPACE__, "wp_insert_term");
+        $fnc->expects($this->exactly(2))
+            ->willReturn(["term_id" => 1, "term_taxonomy_id" => 2]);
+
+        $tax = $this->getFunctionMock(__NAMESPACE__, "taxonomy_exists");
+        $tax->expects($this->exactly(2))
+            ->willReturn(true);
+
+        # First return a null as the terms doesn't exist
+        # Then return true because it does
+        $term = $this->getFunctionMock(__NAMESPACE__, "term_exists");
+        $term->expects($this->exactly(2))
+            ->will($this->returnValueMap([
+                [null],
+                [true],
+            ]));
+
+        $term = Faktory::new("term", ["name" => "foo"])->save();
+        $term = Faktory::new("term", ["name" => "foo"])->save();
 
         $this->assertEquals(1, $term->ID);
         $this->assertEquals(1, $term->term_id);
@@ -210,7 +244,17 @@ class FaktoryTests extends TestCase
     {
         $fnc = $this->getFunctionMock(__NAMESPACE__, "wp_insert_term");
         $fnc->expects($this->once())
-            ->willReturn(new \stdClass);
+            ->willReturn(new class {
+                public function get_error_message() { return ""; }
+            });
+
+        $tax = $this->getFunctionMock(__NAMESPACE__, "taxonomy_exists");
+        $tax->expects($this->once())
+            ->willReturn(true);
+
+        $term = $this->getFunctionMock(__NAMESPACE__, "term_exists");
+        $term->expects($this->once())
+            ->willReturn(NULL);
 
         $this->expectException(\Exception::class);
 

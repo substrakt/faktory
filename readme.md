@@ -12,6 +12,11 @@ Faktory::new("post");
 Faktory::new("page");
 ```
 
+## Create a new Term factory
+```php
+Faktory::new("term");
+```
+
 ## Overwrite properties
 ```php
 Faktory::new("page", ["post_title" => "Foo"]);
@@ -122,7 +127,7 @@ return [
     "parent"           => 0,
     "post_author"      => "",
     "slug"             => "",
-    "taxonomy"         => "",
+    "taxonomy"         => "category",
     "term_group"       => 0,
     "term_id"          => 0,
     "term_taxonomy_id" => 0,
