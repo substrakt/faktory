@@ -63,9 +63,6 @@ class Faktory
         # Parent directory
         $dir = dirname(__DIR__);
 
-        # Create an instance of faker to use in factories
-        $faker = \Faker\Factory::create();
-
         # Add the parent directory to the list of directories
         # where a factories folder can be found.
         static::addDirs($dir);

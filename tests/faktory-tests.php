@@ -158,7 +158,7 @@ class FaktoryTests extends TestCase
         $fnc->expects($this->once())
             ->willReturn(1);
 
-        $term = Faktory::new()->save();
+        Faktory::new()->save();
     }
 
     public function test_an_excexption_is_raised_when_calling_wp_insert_post_fails()

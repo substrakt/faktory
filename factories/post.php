@@ -1,5 +1,8 @@
 <?php
+use HiFolks\RandoPhp\Randomize;
+
 $date = date("Y-m-d H:i:s");
+
 return [
     "comment_count"     => "",
     "comment_status"    => "",
@@ -18,7 +21,7 @@ return [
     "post_parent"       => 0,
     "post_password"     => "",
     "post_status"       => "publish",
-    "post_title"        => $faker->name,
+    "post_title"        => Randomize::chars()->generate(),
     "post_type"         => "post",
     "tax_input"         => [],
     "class"            => "\Faktory\Post",
