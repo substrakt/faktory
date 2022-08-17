@@ -3,3 +3,4 @@ vendor
 coverage
 build
 cache
+.phpunit.result.cache

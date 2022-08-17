@@ -1,9 +1,12 @@
 <?php
+use HiFolks\RandoPhp\Randomize;
+
+$date = date("Y-m-d H:i:s");
 
 return [
     "count"            => 0,
     "description"      => "",
-    "name"             => $faker->name,
+    "name"             => Randomize::chars()->generate(),
     "parent"           => 0,
     "post_author"      => "",
     "slug"             => "",
