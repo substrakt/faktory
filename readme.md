@@ -2,24 +2,24 @@
 
 ## Create a new Post factory
 ```php
-Faktory::new();
+$f = Faktory::new();
 # or
-Faktory::new("post");
+$f = Faktory::new("post");
 ```
 
 ## Create a new Page factory
 ```php
-Faktory::new("page");
+$f = Faktory::new("page");
 ```
 
 ## Create a new Term factory
 ```php
-Faktory::new("term");
+$f = Faktory::new("term");
 ```
 
 ## Overwrite properties
 ```php
-Faktory::new("page", ["post_title" => "Foo"]);
+$f = Faktory::new("page", ["post_title" => "Foo"]);
 ```
 
 ## Save Faktory to the database
@@ -46,16 +46,22 @@ Add a folder in your desired directory called `factories` then add the factories
 Faktory::addDirs([
     "the/full/path/to/the/parent/dir"
 ]);
-
 ```
+
 ### The class attribute
 The class attribute defined on a factory determines which Faktory object will be returned. Currently this is either a `Faktory\Post`, `Faktory\Page` or a `Faktory\Term`. If no class attribute is present a `Faktory\Post` is returned.
+```php
+[
+...,
+"class" => "\Faktory\Post",
+];
 ```
-"class" => "\Faktory\Post"
-```
-The `Faktory\Post` and `Faktory\Page` objects are identical other than in name. They exist as a way to help distinquish between the two post types. If you are creating term factories then it will be important tho specific the term class.
-```
-"class" => "\Faktory\Term"
+The `Faktory\Post` and `Faktory\Page` objects are identical other than in name. They exist as a way to help distinquish between the two post types. If you are creating term factories then it will be important to specific the term class.
+```php
+[
+...,
+"class" => "\Faktory\Term",
+];
 ```
 
 ## Default factories
@@ -134,10 +140,35 @@ return [
     "class"            => "\Faktory\Term",
 ];
 ```
+## Shorthand properties
+For factories that are a post type (i.e posts, pages etc) shorthand can be used for the array keys. Below is a map showing the what the shorthand property will be transformed into.
+```php
+Faktory::new("page", ["title" => "Foo", "content" => "Foo bar baz"]);
+```
+### Shorthand keys
+Here is a list of the all the shorthand keys and the name of the full key they map to.
+```php
+$map = [
+    "author"         => "post_author",
+    "name"           => "post_name",
+    "type"           => "post_type",
+    "title"          => "post_title",
+    "date"           => "post_date",
+    "date_gmt"       => "post_date_gmt",
+    "content"        => "post_content",
+    "excerpt"        => "post_excerpt",
+    "status"         => "post_status",
+    "password"       => "post_password",
+    "parent"         => "post_parent",
+    "modified"       => "post_modified",
+    "modified_gmt"   => "post_modified_gmt",
+    "meta"           => "meta_input",
+];
+```
 
 ## Undefined factories
 Creating an undefined factories will create a factory of the type `page` but the post_type will be set to what was asked for.
-```
+```php
 $fixture = Faktory::new('foobar');
 $fixture->post_type #=> 'foobar'
 ```

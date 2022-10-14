@@ -6,17 +6,16 @@ class Faktory
 {
     /**
      * An array of directories to load factories from.
-     * @var array
      */
-    public static $dirs = [];
+    public static array $dirs = [];
 
     /**
      * Add the directory array of directories to search for factories.
      *
-     * @param mixed string|array the directories to add
+     * @param string|array the directories to add
      * @return array The directories
      */
-    public static function addDirs($dirs): array
+    public static function addDirs(string|array $dirs): array
     {
         if (!is_array($dirs)) {
             $dirs = [$dirs];
@@ -35,7 +34,7 @@ class Faktory
      * @param array $args Array of properties and values to override.
      * @return object
      */
-    public static function create($type = "post", $args = []): object
+    public static function create(string $type = "post", array $args = []): object
     {
         return static::generate($type, $args, $save = true);
     }
@@ -48,21 +47,59 @@ class Faktory
      * @param array $args Array of properties and values to override.
      * @return object
      */
-    public static function new($type = "post", $args = []): object
+    public static function new(string $type = "post", array $args = []): object
     {
         return static::generate($type, $args, $save = false);
     }
 
     /**
-     * Load a Faktory from the faktories directorty and return the containing array.
-     * @param string $file name of faktory to load.
+     * Load a factory from the available directories and return the containing array.
+     *
+     * @param string $file name of factory to load.
+     * @paran array $args the arguments to use as overwites to the factory
      * @return array
      */
     protected static function loadFactory(string $file, array $args = []): array
     {
+        # $default = Was the default factory loaded
+        list($pathToFactory, $default) = static::locateFactory($file);
+
+        # If the default factory was loaded set the post type to match the name
+        # of the file var. This allows for factories to be created for post types
+        # that don't have a corresponding factory file.
+        if ($default && !isset($args["post_type"])) {
+            $args["post_type"] = $file;
+        }
+
+        $factory = require $pathToFactory;
+
+        # Obtain the class and call the setKeys method to update any shorthand
+        # properties to the full properties WordPress expects
+        $class = $factory["class"];
+        $data = array_merge($factory, $class::setKeys($args));
+
+        # Merge top level array to allow for default array data to be stored
+        # in the factory file.
+        foreach ($factory as $k => $v) {
+            if (is_array($v) && isset($args[$k])) {
+                $data[$k] = array_merge($factory[$k], $args[$k]);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Return an array containing the path the factory to be used and a boolean
+     * as to whether it is the default factory or not.
+     *
+     * @param string $fileName The name of the factory file searched for
+     * @return array [string, boolean]
+     */
+    protected static function locateFactory(string $fileName): array
+    {
         # Parent directory
         $dir = dirname(__DIR__);
-
         # Add the parent directory to the list of directories
         # where a factories folder can be found.
         static::addDirs($dir);
@@ -72,28 +109,13 @@ class Faktory
         foreach (static::$dirs as $path) {
             $path = rtrim($path, "/");
 
-            if (file_exists($fullPath = "{$path}/factories/{$file}.php")) {
-                # Require the factory
-                $defaults = require $fullPath;
-                # Merge the data in the factory with the data passed in via the test
-                $data = array_merge($defaults, $args);
-                # Loop through all the data in the factory, for all values that are arrays
-                # merge them with the data passed via the test
-                foreach ($defaults as $k => $v) {
-                    if (is_array($v) and isset($args[$k])) {
-                        $data[$k] = array_merge($defaults[$k], $args[$k]);
-                    }
-                }
-
-                return $data;
+            if (file_exists($fullPath = "{$path}/factories/{$fileName}.php")) {
+                return [$fullPath, false];
             }
         }
 
-        # A factory can't be found
-        # Return a post factory but change the post_type to
-        # be that of the missing factory.
-        # This allows factories for custom post types to be easily created used.
-        return array_merge(require "{$dir}/factories/page.php", ['post_type' => $file], $args);
+        # Return the default factory
+        return ["{$dir}/factories/page.php", true];
     }
 
     /**
@@ -102,7 +124,7 @@ class Faktory
      * @param string $type the factory to load
      * @param array $args the arguments passed from the test to overwite the defaults
      * @param bool $save should the data be saved to the database
-     * @param object
+     * @return object
      */
     protected static function generate(string $type, array $args, bool $save): object
     {
@@ -112,7 +134,7 @@ class Faktory
         if (isset($args["class"])) {
             $class = $args["class"];
             unset($args["class"]);
-            $factory =  new $class($args);
+            $factory = new $class($args);
         } else {
             $factory = new Post($args);
         }
@@ -124,4 +146,5 @@ class Faktory
 
         return $factory;
     }
+
 }

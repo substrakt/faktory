@@ -1,15 +1,14 @@
 <?php
-use HiFolks\RandoPhp\Randomize;
 
-$date = date("Y-m-d H:i:s");
+use HiFolks\RandoPhp\Randomize;
 
 return [
     "count"            => 0,
     "description"      => "",
     "name"             => Randomize::chars()->generate(),
     "parent"           => 0,
-    "post_author"      => "",
     "slug"             => "",
+    "alias_of"         => "",
     "taxonomy"         => "category",
     "term_group"       => 0,
     "term_id"          => 0,

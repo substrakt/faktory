@@ -24,5 +24,5 @@ return [
     "post_title"        => Randomize::chars()->generate(),
     "post_type"         => "post",
     "tax_input"         => [],
-    "class"            => "\Faktory\Post",
+    "class"             => "\Faktory\Post",
 ];
