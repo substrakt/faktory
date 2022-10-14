@@ -66,6 +66,62 @@ class FaktoryTests extends TestCase
         );
     }
 
+    /**
+     */
+    public function test_faktory_created_Faktory_Post_object_properties_can_be_set_with_shorthand()
+    {
+        $args = [
+            "author"         => "5", # Author ID is a string, classic WordPress.
+            "name"           => "foo-bar",
+            "type"           => "page",
+            "title"          => "Foo Bar",
+            "date"           => date("Y-m-d H:i:s"),
+            "date_gmt"       => date("Y-m-d H:i:s"),
+            "content"        => "Foo bar baz",
+            "excerpt"        => "Bar baz foo",
+            "status"         => "publish",
+            "password"       => "",
+            "parent"         => 10,
+            "modified"       => date("Y-m-d H:i:s"),
+            "modified_gmt"   => date("Y-m-d H:i:s"),
+        ];
+
+        $map = [
+            "author"         => "post_author",
+            "name"           => "post_name",
+            "type"           => "post_type",
+            "title"          => "post_title",
+            "date"           => "post_date",
+            "date_gmt"       => "post_date_gmt",
+            "content"        => "post_content",
+            "excerpt"        => "post_excerpt",
+            "status"         => "post_status",
+            "password"       => "post_password",
+            "parent"         => "post_parent",
+            "modified"       => "post_modified",
+            "modified_gmt"   => "post_modified_gmt",
+            "meta"           => "meta_input",
+        ];
+
+        foreach ($args as $property => $value) {
+            $key = $map[$property];
+            $this->assertEquals(
+                $value,
+                Faktory::new("page", $args)->$key
+            );
+        }
+
+        # Assert that factories that don't have a file can be used with
+        # shorthand properties
+        foreach ($args as $property => $value) {
+            $key = $map[$property];
+            $this->assertEquals(
+                $value,
+                Faktory::new("foo", $args)->$key
+            );
+        }
+    }
+
     public function test_faktory_creates_Faktory_Post_object_by_default()
     {
         $this->assertEquals(
@@ -208,6 +264,26 @@ class FaktoryTests extends TestCase
         $this->assertEquals(1, $term->ID);
         $this->assertEquals(1, $term->term_id);
         $this->assertEquals(2, $term->term_taxonomy_id);
+    }
+
+    public function test_factory_terms_dont_contain_post_prefixed_properties()
+    {
+        $tax = $this->getFunctionMock(__NAMESPACE__, "taxonomy_exists");
+        $tax->expects($this->once())
+            ->willReturn(true);
+
+        $term = $this->getFunctionMock(__NAMESPACE__, "term_exists");
+        $term->expects($this->once())
+            ->willReturn(NULL);
+
+        $fnc = $this->getFunctionMock(__NAMESPACE__, "wp_insert_term");
+        $fnc->expects($this->once())
+            ->willReturn(["term_id" => 1, "term_taxonomy_id" => 2]);
+
+        $term = Faktory::new("term", ["name" => "Foo", "parent" => 1])->save();
+
+        $this->assertFalse(isset($term->post_name), "Property post_name present on term");
+        $this->assertFalse(isset($term->post_parent), "Property post_parent present on term");
     }
 
     /**
