@@ -36,7 +36,9 @@ class Faktory
      */
     public static function create(string $type = "post", array $args = []): object
     {
-        return static::generate($type, $args, $save = true);
+        $f = static::generate($type, $args);
+        $f->save();
+        return $f;
     }
 
     /**
@@ -49,7 +51,7 @@ class Faktory
      */
     public static function new(string $type = "post", array $args = []): object
     {
-        return static::generate($type, $args, $save = false);
+        return static::generate($type, $args);
     }
 
     /**
@@ -126,25 +128,17 @@ class Faktory
      * @param bool $save should the data be saved to the database
      * @return object
      */
-    protected static function generate(string $type, array $args, bool $save): object
+    protected static function generate(string $type, array $args): object
     {
-        $args = static::loadFactory($type, $args);
+        $args = array_merge(
+            ["class" => Page::class],
+            static::loadFactory($type, $args)
+        );
 
-        # Use the class set via the args as the return class
-        if (isset($args["class"])) {
-            $class = $args["class"];
-            unset($args["class"]);
-            $factory = new $class($args);
-        } else {
-            $factory = new Post($args);
-        }
+        $class = $args["class"];
+        unset($args["class"]);
 
-        # Save the post to the database if desired
-        if ($save) {
-            $factory->save();
-        }
-
-        return $factory;
+        return new $class($args);
     }
 
 }
