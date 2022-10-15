@@ -11,6 +11,14 @@ class FaktoryTests extends TestCase
         );
     }
 
+    public function test_faktory_creates_Faktory_Post_object_by_default()
+    {
+        $this->assertEquals(
+            "Faktory\Page", get_class(Faktory::new()),
+            "Faktory::new should return a FaktoryPost object when no parameters are passed"
+        );
+    }
+
     /**
      * @dataProvider wpPostTypesProvider
      */
@@ -120,14 +128,6 @@ class FaktoryTests extends TestCase
                 Faktory::new("foo", $args)->$key
             );
         }
-    }
-
-    public function test_faktory_creates_Faktory_Post_object_by_default()
-    {
-        $this->assertEquals(
-            "Faktory\Post", get_class(Faktory::new()),
-            "Faktory::new should return a FaktoryPost object when no parameters are passed"
-        );
     }
 
     public function test_loaded_factories_can_be_passed_into_class()
