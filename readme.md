@@ -1,15 +1,15 @@
 # Faktory
 
-## Create a new Post factory
+## Create a new Page factory
 ```php
 $f = Faktory::new();
 # or
-$f = Faktory::new("post");
+$f = Faktory::new("page");
 ```
 
-## Create a new Page factory
+## Create a new Post factory
 ```php
-$f = Faktory::new("page");
+$f = Faktory::new("post");
 ```
 
 ## Create a new Term factory

@@ -34,7 +34,7 @@ class Faktory
      * @param array $args Array of properties and values to override.
      * @return object
      */
-    public static function create(string $type = "post", array $args = []): object
+    public static function create(string $type = "page", array $args = []): object
     {
         $f = static::generate($type, $args);
         $f->save();
@@ -49,7 +49,7 @@ class Faktory
      * @param array $args Array of properties and values to override.
      * @return object
      */
-    public static function new(string $type = "post", array $args = []): object
+    public static function new(string $type = "page", array $args = []): object
     {
         return static::generate($type, $args);
     }
