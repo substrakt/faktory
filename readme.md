@@ -1,52 +1,136 @@
 # Faktory
 
-## Create a new Page factory
+Faktory is a library for creating fixtures for WordPress. It can be used to create Posts, Pages, Custom Post Types, and Terms. It is particularly useful for generating fixtures during test-driven development.
+
+Faktory ships with factories defined for pages, posts, terms and custom post types. You can define your own factories by simply creating a corresponding PHP file and including the default properties.
+
+To create the fake data Faktory uses [Rando-PHP](https://github.com/Hi-Folks/rando-php).
+
+## Creating a factory
 ```php
-$f = Faktory::new();
-# or
-$f = Faktory::new("page");
+$f = Faktory::create(string $factory = "page", array|object $args = []);
 ```
 
-## Create a new Post factory
+### Parameters
+
+#### factory
+The name of the factory to create. The casing must match the casing used for the filename of the factory. This is to avoid issues with case sensitive file systems such as Linux. The builtin factory files are all lowercase.
+
+- page (default)
+- post
+
+#### args
+An array of elements to overwrite the default values. The array for the page and post factories is passed to [`wp_insert_post`](https://developer.wordpress.org/reference/functions/wp_insert_post/) to save the post to the database.
 ```php
-$f = Faktory::new("post");
+$args = [
+    "comment_count"     => "",
+    "comment_status"    => "",
+    "ID"                => 0,
+    "meta_input"        => [],
+    "menu_order"        => 0,
+    "ping_status"       => "",
+    "post_author"       => "",
+    "post_content"      => "",
+    "post_date_gmt"     => $date,
+    "post_date"         => $date,
+    "post_excerpt"      => "",
+    "post_modified_gmt" => $date,
+    "post_modified"     => $date,
+    "post_name"         => "",
+    "post_parent"       => 0,
+    "post_password"     => "",
+    "post_status"       => "publish",
+    "post_title"        => Randomize::chars()->generate(),
+    "post_type"         => "page",
+    "tax_input"         => [],
+];
 ```
 
-## Create a new Term factory
-```php
-$f = Faktory::new("term");
-```
+**Note:** the field `post_type` will be set to `post` when creating a new factory from `Faktory::create("post")`. The ID of the inserted item will be updated to match that of the corresponding row in the database.
 
-## Overwrite properties
-```php
-$f = Faktory::new("page", ["post_title" => "Foo"]);
-```
+### Return values
+An object will be returned.
 
-## Save Faktory to the database
-```php
-$f = Faktory::new("page");
-$f->save();
-```
-As a shortcut to this there is the `create` method.
+### Examples
+
+#### Creating a page factory
 ```php
 $f = Faktory::create("page");
 ```
+#### Creating a page factory setting some attributes
+```php
+$f = Faktory::create("page", ["post_title" => "About me", "post_name" => "about"]);
+```
+
+## Creating a factory for a term
+The same method `Faktory::create` can be used to create term fixtures. The deault factory is page so make sure the first parameter is set to term.
+
+#### args
+An array of elements to overwrite the default values. The array is passed as the `$args` parameter to [`wp_insert_term`](https://developer.wordpress.org/reference/functions/wp_insert_term/) to save the term to the database.
+```php
+$args = [
+    "alias_of"    => "",
+    "description" => "",
+    "name"        => Randomize::chars()->generate(),
+    "parent"      => 0,
+    "slug"        => "",
+    "taxonomy"    => "category",
+];
+```
+### Return values
+An object will be returned.
+
+### Examples
+
+#### Creating a category term
+```php
+$f = Faktory::create("term", ["name" => "Programming"]);
+```
+
+#### Creating a tag term
+```php
+$f = Faktory::create("term", ["name" => "TDD", "taxonomy" => "post_tag"]);
+```
+
+#### Creating a term for a custom taxonomy called "genre"
+```php
+$f = Faktory::create("term", ["name" => "Computer Science", "taxonomy" => "genre"]);
+```
 
 ## Pass the returned Faktory to a class
-`Faktory::new` or `Faktory::create` will return an object. This object mimics a WordPress post object or term object. It is common practise to create another object passing in a WP_Post object as a param.
+`Faktory::new` or `Faktory::create` will return an object. This object mimics a WordPress post object or term object. You may find yourself frequently passing the created fixture as a paramter to another class. This is where the `as` method can come in useful.
 ```php
-$f = Faktory::new("page")->as("TheClassIWant");
+$f = Faktory::create("page")->as("TheClassIWant");
 # is equal to
 $f = new TheClassIWant(Faktory::new("page"));
 ```
+## Creating factories without saving them
+If you want to create a factory but not have it saved to the database then you can use the `new` method in place of the `create` method. The `new` method takes the same arguments as the `create` method.
+```php
+$f = Faktory::new("page");
+```
+If you want to save the Faktory afterall then the `save` method can be called.
 
-## Add more factories
-Add a folder in your desired directory called `factories` then add the factories as PHP files. The factories must return an array. Next register the parent directory with
+```php
+$f = Faktory::new("page");
+...
+$f->save();
+```
+
+## Creating your own factories
+Add a directory called `factories` in your desired location. In this directory you will put all your custom factory files. If you create a file called, post.php, page.php or term.php it will overwrite the default factories used by Faktory. This is perfectly acceptable.
+
+You will then need to register the directory with Faktory using the `addDirs` method. This should be done in your bootstrap file before you intend to use Faktory.
+
+### Eaxample
 ```php
 Faktory::addDirs([
     "the/full/path/to/the/parent/dir"
 ]);
 ```
+**Note** the directroy added is the parent directory of the factories directory you previously created.
+
+Your factories need to return an array of data. The data that is returned depends on the type of data that is being inserted into the database. Currently Faktory supports post types and terms. To inform Faktory what type some object is to be created use the [class attribute]("#the-class-attribute") with your returned array. For example see the [default facotries]("#default-factories").
 
 ### The class attribute
 The class attribute defined on a factory determines which Faktory object will be returned. Currently this is either a `Faktory\Post`, `Faktory\Page` or a `Faktory\Term`. If no class attribute is present a `Faktory\Post` is returned.
@@ -63,6 +147,8 @@ The `Faktory\Post` and `Faktory\Page` objects are identical other than in name. 
 "class" => "\Faktory\Term",
 ];
 ```
+
+Each of the classes has a save method which is resposible for inserting the data into the database if `Faktory::create` was used.
 
 ## Default factories
 ### Post
@@ -167,11 +253,13 @@ $map = [
 ```
 
 ## Undefined factories
-Creating an undefined factories will create a factory of the type `page` but the post_type will be set to what was asked for.
+Creating an undefined factories will create a factory based on `page` but the post_type will be set to what was asked for.
+### Example
 ```php
-$fixture = Faktory::new('foobar');
+$fixture = Faktory::create('foobar');
 $fixture->post_type #=> 'foobar'
 ```
+This allow you to easily create fixtures for custom post types without the need to create a corresponding file in your factories directory.
 
 ## Advanced Custom Field
 Currently support for Advanced Custom Fields is provided through the `meta_input` argument.
@@ -188,9 +276,16 @@ Note the field reference (field_5be99d501d261) is not nessecary for primitive va
 If you are having to do alot of `meta_input` work inside your tests, consider moving it to a factory file instead.
 
 ## Contributing
-We'd love you to help out with Faktory and no contribution is too small.
+We'd love you to help out with Faktory and no contribution is too small. We particularly welcome pull requests from anyone who is looking to make their first open source contribution.
 
-### Contributing code and documentation
+Fork the Faktory and create a pull request with your changes or features in. Of course, you'll need to include some tests if the changes are to the code.
+
+### Ideas for pull requests
+- Factory for Users
+- Factory for Attachments. WordPress stores attachments as posts but requires extra data to make them works as attachments.
+- Option to return the native `WP_Post` and `WP_Term` objects instead of the Faktory ones.
+- Documentation. You can never have enough examples.
+
 We loosely follow the
 [PSR-1](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md)
 and
