@@ -11,7 +11,7 @@ class FaktoryTests extends TestCase
         );
     }
 
-    public function test_faktory_creates_Faktory_Post_object_by_default()
+    public function test_faktory_creates_Faktory_Page_object_by_default()
     {
         $this->assertEquals(
             "Faktory\Page", get_class(Faktory::new()),
@@ -33,18 +33,18 @@ class FaktoryTests extends TestCase
     /**
      * @dataProvider wpPostPropertiesProvider
      */
-    public function test_faktory_created_Faktory_Post_objects_have_all_expected_properties($property)
+    public function test_faktory_created_Faktory_Page_objects_have_all_expected_properties($property)
     {
         $this->assertTrue(
             property_exists(Faktory::new(), $property),
-            "Faktory::new should return a FaktoryPost object with property {$property} defined"
+            "Faktory::new should return a FaktoryPage object with property {$property} defined"
         );
     }
 
     /**
      * @dataProvider wpPostPropertiesProvider
      */
-    public function test_faktory_created_Faktory_Post_object_properties_can_be_set($property)
+    public function test_faktory_created_Faktory_Page_object_properties_can_be_set($property)
     {
         $args = [
             "ID"                => 10,
@@ -76,7 +76,7 @@ class FaktoryTests extends TestCase
 
     /**
      */
-    public function test_faktory_created_Faktory_Post_object_properties_can_be_set_with_shorthand()
+    public function test_faktory_created_Faktory_Page_object_properties_can_be_set_with_shorthand()
     {
         $args = [
             "author"         => "5", # Author ID is a string, classic WordPress.
@@ -156,7 +156,7 @@ class FaktoryTests extends TestCase
 
         $this->assertFalse(
             isset(
-                Faktory::new("post", ["class" => $class])->class
+                Faktory::new("page", ["class" => $class])->class
             ),
             "Faktory should unset the class attribute of the factories it creates"
         );
@@ -217,7 +217,7 @@ class FaktoryTests extends TestCase
         Faktory::new()->save();
     }
 
-    public function test_an_excexption_is_raised_when_calling_wp_insert_post_fails()
+    public function test_an_exception_is_raised_when_calling_wp_insert_post_fails()
     {
         $fnc = $this->getFunctionMock(__NAMESPACE__, "wp_insert_post");
         $fnc->expects($this->once())

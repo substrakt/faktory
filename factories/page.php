@@ -1,4 +1,5 @@
 <?php
+
 use HiFolks\RandoPhp\Randomize;
 
 $date = date("Y-m-d H:i:s");
