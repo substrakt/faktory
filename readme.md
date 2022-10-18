@@ -102,7 +102,7 @@ $f = Faktory::create("term", ["name" => "Computer Science", "taxonomy" => "genre
 ```php
 $f = Faktory::create("page")->as("TheClassIWant");
 # is equal to
-$f = new TheClassIWant(Faktory::new("page"));
+$f = new TheClassIWant(Faktory::create("page"));
 ```
 ## Creating factories without saving them
 If you want to create a factory but not have it saved to the database then you can use the `new` method in place of the `create` method. The `new` method takes the same arguments as the `create` method.
