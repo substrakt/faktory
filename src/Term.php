@@ -2,7 +2,7 @@
 
 namespace Faktory;
 
-class Term extends Post
+class Term extends Page
 {
     /**
      * Save the term into the database and return the instance

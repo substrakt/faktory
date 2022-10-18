@@ -49,7 +49,7 @@ $args = [
 **Note:** the field `post_type` will be set to `post` when creating a new factory from `Faktory::create("post")`. The ID of the inserted item will be updated to match that of the corresponding row in the database.
 
 ### Return values
-An object will be returned.
+A `Faktory\Page` object will be returned.
 
 ### Examples
 
@@ -78,7 +78,7 @@ $args = [
 ];
 ```
 ### Return values
-An object will be returned.
+A `Faktory\Term`  object will be returned.
 
 ### Examples
 
@@ -96,6 +96,16 @@ $f = Faktory::create("term", ["name" => "TDD", "taxonomy" => "post_tag"]);
 ```php
 $f = Faktory::create("term", ["name" => "Computer Science", "taxonomy" => "genre"]);
 ```
+#### Using the terms with another Factory
+```php
+$term = Faktory::create("term", ["name" => "Programming"]);
+$page = Faktory::create("page", [
+    "tax_input" => [
+        "category" => [$term->ID]
+    ]
+]);
+```
+**Note** as per the WordPress documentation if the taxonomy is hierarchical, the term list needs to be either an array of term IDs or a comma-separated string of IDs. If the taxonomy is non-hierarchical, the term list can be an array that contains term names or slugs, or a comma-separated string of names or slugs. This is because, in hierarchical taxonomy, child terms can have the same names with different parent terms, so the only way to connect them is using ID. Default empty.
 
 ## Pass the returned Faktory to a class
 `Faktory::new` or `Faktory::create` will return an object. This object mimics a WordPress post object or term object. You may find yourself frequently passing the created fixture as a paramter to another class. This is where the `as` method can come in useful.
@@ -130,17 +140,17 @@ Faktory::addDirs([
 ```
 **Note** the directroy added is the parent directory of the factories directory you previously created.
 
-Your factories need to return an array of data. The data that is returned depends on the type of data that is being inserted into the database. Currently Faktory supports post types and terms. To inform Faktory what type some object is to be created use the [class attribute]("#the-class-attribute") with your returned array. For example see the [default facotries]("#default-factories").
+Your factories need to return an array of data. The data that is returned depends on the type of data that is being inserted into the database. Currently Faktory supports post types and terms. To inform Faktory what type some object is to be created use the [class attribute](#the-class-attribute) with your returned array. For example see the [default facotries](#default-factories).
 
 ### The class attribute
-The class attribute defined on a factory determines which Faktory object will be returned. Currently this is either a `Faktory\Post`, `Faktory\Page` or a `Faktory\Term`. If no class attribute is present a `Faktory\Post` is returned.
+The class attribute defined on a factory determines which Faktory object will be returned. Currently this is either a `Faktory\Post`, `Faktory\Page` or a `Faktory\Term`. If no class attribute is present a `Faktory\Page` is returned.
 ```php
 [
 ...,
-"class" => "\Faktory\Post",
+"class" => "\Faktory\Page",
 ];
 ```
-The `Faktory\Post` and `Faktory\Page` objects are identical other than in name. They exist as a way to help distinquish between the two post types. If you are creating term factories then it will be important to specific the term class.
+The `Faktory\Page` and `Faktory\Post` objects are identical other than in name. They exist as a way to help distinquish between the two post types. If you are creating term factories then it will be important to specific the term class.
 ```php
 [
 ...,
@@ -151,34 +161,6 @@ The `Faktory\Post` and `Faktory\Page` objects are identical other than in name. 
 Each of the classes has a save method which is resposible for inserting the data into the database if `Faktory::create` was used.
 
 ## Default factories
-### Post
-```php
-# faktory/factories/post.php
-$date = date("Y-m-d H:i:s");
-return [
-    "comment_count"     => "",
-    "comment_status"    => "",
-    "ID"                => 0,
-    "meta_input"        => [],
-    "menu_order"        => 0,
-    "ping_status"       => "",
-    "post_author"       => "",
-    "post_content"      => "",
-    "post_date_gmt"     => $date,
-    "post_date"         => $date,
-    "post_excerpt"      => "",
-    "post_modified_gmt" => $date,
-    "post_modified"     => $date,
-    "post_name"         => "",
-    "post_parent"       => 0,
-    "post_password"     => "",
-    "post_status"       => "publish",
-    "post_title"        => Randomize::chars()->generate(),
-    "post_type"         => "post",
-    "tax_input"         => [],
-    "class"             => "\Faktory\Post",
-];
-```
 
 ### Page
 ```php
@@ -209,6 +191,35 @@ return [
 ];
 ```
 
+### Post
+```php
+# faktory/factories/post.php
+$date = date("Y-m-d H:i:s");
+return [
+    "comment_count"     => "",
+    "comment_status"    => "",
+    "ID"                => 0,
+    "meta_input"        => [],
+    "menu_order"        => 0,
+    "ping_status"       => "",
+    "post_author"       => "",
+    "post_content"      => "",
+    "post_date_gmt"     => $date,
+    "post_date"         => $date,
+    "post_excerpt"      => "",
+    "post_modified_gmt" => $date,
+    "post_modified"     => $date,
+    "post_name"         => "",
+    "post_parent"       => 0,
+    "post_password"     => "",
+    "post_status"       => "publish",
+    "post_title"        => Randomize::chars()->generate(),
+    "post_type"         => "post",
+    "tax_input"         => [],
+    "class"             => "\Faktory\Post",
+];
+```
+
 ### Term
 ```php
 # faktory/factories/term.php
@@ -226,11 +237,13 @@ return [
     "class"            => "\Faktory\Term",
 ];
 ```
+
 ## Shorthand properties
 For factories that are a post type (i.e posts, pages etc) shorthand can be used for the array keys. Below is a map showing the what the shorthand property will be transformed into.
 ```php
 Faktory::new("page", ["title" => "Foo", "content" => "Foo bar baz"]);
 ```
+
 ### Shorthand keys
 Here is a list of the all the shorthand keys and the name of the full key they map to.
 ```php
