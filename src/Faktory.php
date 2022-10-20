@@ -102,16 +102,15 @@ class Faktory
     {
         # Parent directory
         $dir = dirname(__DIR__);
-        # Add the parent directory to the list of directories
-        # where a factories folder can be found.
-        static::addDirs($dir);
+        # Add the directory to the list of directories that contain factories
+        static::addDirs(["{$dir}/factories"]);
 
         # Loop through all of the directories to find the factor in
         # all the registered factory directories
         foreach (static::$dirs as $path) {
             $path = rtrim($path, "/");
 
-            if (file_exists($fullPath = "{$path}/factories/{$fileName}.php")) {
+            if (file_exists($fullPath = "{$path}/{$fileName}.php")) {
                 return [$fullPath, false];
             }
         }

@@ -172,7 +172,7 @@ class FaktoryTests extends TestCase
 
     public function test_meta_input_is_correctly_merged()
     {
-        Faktory::addDirs(__DIR__);
+        Faktory::addDirs(__DIR__."/factories");
 
         $post = Faktory::new("input", [
             "meta_input" => [

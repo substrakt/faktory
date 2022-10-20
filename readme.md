@@ -136,10 +136,9 @@ You will then need to register the directory with Faktory using the `addDirs` me
 ### Eaxample
 ```php
 Faktory::addDirs([
-    "the/full/path/to/the/parent/dir"
+    "the/full/path/to/your/factories/dir"
 ]);
 ```
-**Note** the array of directories are paths to the parent directory of the factories directory. 
 
 Your factories need to return an array of data. The data that is returned depends on the type of data that is being inserted into the database. Currently Faktory supports post types and terms. To inform Faktory what type some object is to be created use the [class attribute](#the-class-attribute) with your returned array. For example see the [default factories](#default-factories).
 
