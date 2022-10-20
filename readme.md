@@ -4,7 +4,7 @@ Faktory is a library for creating fixtures for WordPress. It can be used to crea
 
 Faktory ships with factories defined for pages, posts, terms and custom post types. You can define your own factories by simply creating a corresponding PHP file and including the default properties.
 
-To create the fake data Faktory uses [Rando-PHP](https://github.com/Hi-Folks/rando-php).
+To create the fake data, Faktory uses [Rando-PHP](https://github.com/Hi-Folks/rando-php).
 
 ## Creating a factory
 ```php
@@ -63,7 +63,7 @@ $f = Faktory::create("page", ["post_title" => "About me", "post_name" => "about"
 ```
 
 ## Creating a factory for a term
-The same method `Faktory::create` can be used to create term fixtures. The deault factory is page so make sure the first parameter is set to term.
+The same method `Faktory::create` can be used to create term fixtures. The deafult factory is page so make sure the first parameter is set to term.
 
 #### args
 An array of elements to overwrite the default values. The array is passed as the `$args` parameter to [`wp_insert_term`](https://developer.wordpress.org/reference/functions/wp_insert_term/) to save the term to the database.
@@ -107,13 +107,6 @@ $page = Faktory::create("page", [
 ```
 **Note** as per the WordPress documentation if the taxonomy is hierarchical, the term list needs to be either an array of term IDs or a comma-separated string of IDs. If the taxonomy is non-hierarchical, the term list can be an array that contains term names or slugs, or a comma-separated string of names or slugs. This is because, in hierarchical taxonomy, child terms can have the same names with different parent terms, so the only way to connect them is using ID. Default empty.
 
-## Pass the returned Faktory to a class
-`Faktory::new` or `Faktory::create` will return an object. This object mimics a WordPress post object or term object. You may find yourself frequently passing the created fixture as a paramter to another class. This is where the `as` method can come in useful.
-```php
-$f = Faktory::create("page")->as("TheClassIWant");
-# is equal to
-$f = new TheClassIWant(Faktory::create("page"));
-```
 ## Creating factories without saving them
 If you want to create a factory but not have it saved to the database then you can use the `new` method in place of the `create` method. The `new` method takes the same arguments as the `create` method.
 ```php
@@ -127,6 +120,14 @@ $f = Faktory::new("page");
 $f->save();
 ```
 
+## Pass the returned Faktory to a class
+`Faktory::create` or `Faktory::new` will return an object. This object mimics a WordPress post object or term object. You may find yourself frequently passing the created fixture as a paramter to another class. This is where the `as` method can come in useful.
+```php
+$f = Faktory::create("page")->as("TheClassIWant");
+# is equal to
+$f = new TheClassIWant(Faktory::create("page"));
+```
+
 ## Creating your own factories
 Add a directory called `factories` in your desired location. In this directory you will put all your custom factory files. If you create a file called, post.php, page.php or term.php it will overwrite the default factories used by Faktory. This is perfectly acceptable.
 
@@ -138,9 +139,9 @@ Faktory::addDirs([
     "the/full/path/to/the/parent/dir"
 ]);
 ```
-**Note** the directroy added is the parent directory of the factories directory you previously created.
+**Note** the array of directories are paths to the parent directory of the factories directory. 
 
-Your factories need to return an array of data. The data that is returned depends on the type of data that is being inserted into the database. Currently Faktory supports post types and terms. To inform Faktory what type some object is to be created use the [class attribute](#the-class-attribute) with your returned array. For example see the [default facotries](#default-factories).
+Your factories need to return an array of data. The data that is returned depends on the type of data that is being inserted into the database. Currently Faktory supports post types and terms. To inform Faktory what type some object is to be created use the [class attribute](#the-class-attribute) with your returned array. For example see the [default factories](#default-factories).
 
 ### The class attribute
 The class attribute defined on a factory determines which Faktory object will be returned. Currently this is either a `Faktory\Post`, `Faktory\Page` or a `Faktory\Term`. If no class attribute is present a `Faktory\Page` is returned.
@@ -158,7 +159,7 @@ The `Faktory\Page` and `Faktory\Post` objects are identical other than in name. 
 ];
 ```
 
-Each of the classes has a save method which is resposible for inserting the data into the database if `Faktory::create` was used.
+Each of the classes has a save method which is responsible for inserting the data into the database if `Faktory::create` was used.
 
 ## Default factories
 
