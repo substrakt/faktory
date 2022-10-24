@@ -105,7 +105,23 @@ $page = Faktory::create("page", [
     ]
 ]);
 ```
-**Note** as per the WordPress documentation if the taxonomy is hierarchical, the term list needs to be either an array of term IDs or a comma-separated string of IDs. If the taxonomy is non-hierarchical, the term list can be an array that contains term names or slugs, or a comma-separated string of names or slugs. This is because, in hierarchical taxonomy, child terms can have the same names with different parent terms, so the only way to connect them is using ID. Default empty.
+
+As per the WordPress documentation if the taxonomy is hierarchical, the term list needs to be either an array of term IDs or a comma-separated string of IDs. If the taxonomy is non-hierarchical, the term list can be an array that contains term names or slugs, or a comma-separated string of names or slugs. This is because, in hierarchical taxonomy, child terms can have the same names with different parent terms, so the only way to connect them is using ID. Default empty.
+
+Using `tax_input` is the equivalent to calling `wp_set_post_terms()` for each custom taxonomy in the array. If the current user doesn’t have the capability to work with a taxonomy, then you must use `wp_set_object_terms()` instead.
+
+Setting the user the test are run against to an administrator will allow `tax_input` to be used. The following example is taken from the bootstrap file from the test suit at Substrakt.
+```php
+(function() {
+    $userId = 1;
+    if (empty(get_users())) {
+        $userId = wp_create_user('admin', 'password');
+    }
+    $user = new \WP_User($userId);
+    $user->set_role('administrator');
+    \wp_set_current_user($userId);
+})();
+```
 
 ## Creating factories without saving them
 If you want to create a factory but not have it saved to the database then you can use the `new` method in place of the `create` method. The `new` method takes the same arguments as the `create` method.
