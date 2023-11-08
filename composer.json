@@ -1,6 +1,7 @@
 {
     "name": "substrakt/faktory",
     "description": "WordPress factories for Test-driven development.",
+    "license": "BSD-3-Clause",
     "autoload": {
         "psr-4": { "Faktory\\": ["src/"] }
     },
