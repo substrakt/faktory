@@ -2,7 +2,7 @@
 
 namespace Faktory;
 
-class Term extends Post
+class Term extends Page
 {
     /**
      * Save the term into the database and return the instance
@@ -35,4 +35,15 @@ class Term extends Post
         throw new \Exception("Faktory Term could not be saved to the database. {$term->get_error_message()}");
     }
 
+    /**
+     * Return the shorthand key map
+     * The map is used to transform the keys from the shorthand to the keys
+     * that WordPress expects.
+     *
+     * @return array
+     */
+    public static function keys(): array
+    {
+        return [];
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 use HiFolks\RandoPhp\Randomize;
 
 $date = date("Y-m-d H:i:s");
@@ -24,5 +25,5 @@ return [
     "post_title"        => Randomize::chars()->generate(),
     "post_type"         => "post",
     "tax_input"         => [],
-    "class"            => "\Faktory\Post",
+    "class"             => "\Faktory\Post",
 ];
