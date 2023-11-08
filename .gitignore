@@ -1,0 +1,6 @@
+.DS_Store
+vendor
+coverage
+build
+cache
+.phpunit.result.cache
