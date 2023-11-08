@@ -149,7 +149,7 @@ Add a directory called `factories` in your desired location. In this directory y
 
 You will then need to register the directory with Faktory using the `addDirs` method. This should be done in your bootstrap file before you intend to use Faktory.
 
-### Eaxample
+### Example
 ```php
 Faktory::addDirs([
     "the/full/path/to/your/factories/dir"
@@ -320,6 +320,9 @@ We loosely follow the
 and
 [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md) coding standards,
 but we'll probably merge any code that looks close enough.
+
+## License
+Faktory is licensed under [The BSD 3-Clause License](LICENSE).
 
 ---
 Development of Faktory is sponsored by [Substrakt](https://substrakt.com)
