@@ -2,6 +2,7 @@
 
 namespace Faktory;
 
+#[\AllowDynamicProperties]
 class Page
 {
 
