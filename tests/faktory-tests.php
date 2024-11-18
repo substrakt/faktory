@@ -348,4 +348,49 @@ class FaktoryTests extends TestCase
             "Faktory::new should return a 'foobar' object when a type is passed"
         );
     }
+
+    public function test_newMany_returns_an_array()
+    {
+        $this->assertTrue(
+            is_array(Faktory::newMany()),
+            "Faktory::newMany should return an array"
+        );
+    }
+
+    public function test_newMany_returns_an_array_of_objects()
+    {
+        $this->assertIsObject(
+            Faktory::newMany()[0],
+            "Faktory::newMany should return an array of objects"
+        );
+    }
+
+    /**
+     * @testWith ["post_title"]
+     *           ["post_title"]
+     */
+    public function test_newMany_increments_suffix(string $property)
+    {
+        $objects = Faktory::newMany(2, 'post', [$property => "Foo Bar"]);
+
+        $this->assertEquals(
+            "Foo Bar 0", $objects[0]->$property,
+            "Faktory::newMany should increment the {$property} suffix"
+        );
+
+        $this->assertEquals(
+            "Foo Bar 1", $objects[1]->$property,
+            "Faktory::newMany should increment the {$property} suffix"
+        );
+    }
+
+    public function test_newMany_instantiates_objects_as_specified_class()
+    {
+        $objects = Faktory::newMany(2, 'post', ["post_title" => "Foo Bar"], class: "Faktory\Page");
+
+        $this->assertEquals(
+            "Faktory\Page", get_class($objects[0]),
+            "Faktory::newMany should instantiate objects as the specified class"
+        );
+    }
 }
