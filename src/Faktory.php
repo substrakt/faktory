@@ -42,6 +42,24 @@ class Faktory
     }
 
     /**
+     * Returns array of new Faktory objects.
+     * The objects are saved to the database.
+     * 
+     * @param int $count The number of objects to create.
+     * @param string $type The name of the factory to load.
+     * @param array $args Array of properties and values to override.
+     * @param ?string $class Set to a class to instantiate the Faktory as.
+     * @return array<object>
+     */
+    public static function createMany(int $count = 2, string $type = "page", array $args = [], ?string $class = null): array
+    {
+        return array_map(function($post) use ($class) {
+            $post->save();
+            return $class ? $post->as($class) : $post;
+        }, static::newMany($count, $type, $args));
+    }
+
+    /**
      * Returns are new Faktory object.
      * The object is not saved to the database.
      *
@@ -52,6 +70,35 @@ class Faktory
     public static function new(string $type = "page", array $args = []): object
     {
         return static::generate($type, $args);
+    }
+
+    /**
+     * Returns array of new Faktory objects.
+     * The objects are not saved to the database.
+     * 
+     * @param int $count The number of objects to create.
+     * @param string $type The name of the factory to load.
+     * @param array $args Array of properties and values to override.
+     * @param ?string $class Set to a class to instantiate the Faktory as.
+     * @return array<object>
+     */
+    public static function newMany(int $count = 2, string $type = "page", array $args = [], ?string $class = null): array
+    {
+        $posts = [];
+
+        for ($i = 0; $i < $count; $i++) {
+            $post = static::generate($type, $args);
+            $post->post_title .= " {$i}";
+            $post->post_name .= " {$i}";
+
+            if ($class) {
+                $post = $post->as($class);
+            }
+
+            $posts[] = $post;
+        }
+
+        return $posts;
     }
 
     /**

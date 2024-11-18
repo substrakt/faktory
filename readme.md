@@ -96,7 +96,7 @@ $f = Faktory::create("term", ["name" => "TDD", "taxonomy" => "post_tag"]);
 ```php
 $f = Faktory::create("term", ["name" => "Computer Science", "taxonomy" => "genre"]);
 ```
-#### Using the terms with another Factory
+#### Using the terms with another factory
 ```php
 $term = Faktory::create("term", ["name" => "Programming"]);
 $page = Faktory::create("page", [
@@ -136,13 +136,45 @@ $f = Faktory::new("page");
 $f->save();
 ```
 
-## Pass the returned Faktory to a class
+## Pass the returned factory to a class
 `Faktory::create` or `Faktory::new` will return an object. This object mimics a WordPress post object or term object. You may find yourself frequently passing the created fixture as a paramter to another class. This is where the `as` method can come in useful.
 ```php
 $f = Faktory::create("page")->as("TheClassIWant");
 # is equal to
 $f = new TheClassIWant(Faktory::create("page"));
 ```
+
+## Creating multiple factories at once
+`Faktory::createMany` or `Faktory::newMany` will return an array of objects in a single line of code.
+```php
+$factories = Faktory::createMany(5, "post");
+```
+
+`createMany` will save the objects to the database.
+`newMany` will not save the objects to the database.
+
+They both support the following args:
+- `count` (default: `2`): The number of objects to create.
+- `type` (default: `page`): See [creating a page factory](https://github.com/substrakt/faktory?tab=readme-ov-file#creating-a-page-factory).
+- `args` (default: `[]`): See [creating a page factory and setting attributes](https://github.com/substrakt/faktory?tab=readme-ov-file#creating-a-page-factory-setting-some-attributes).
+- `class` (default `null`): The string of a class to instantiate the factories as.
+
+Each Factory is given an incrementing suffix to the `post_title` and `post_name`. See the following example for context.
+
+### Examples
+
+Basic use-case:
+
+```php
+$fs = Faktory::createMany(3, 'post', ['post_title' => 'Foo'], 'My\Desired\Class');
+```
+
+The above will:
+- Create 3 factories.
+- Assign them the `post_titles` of `Foo 0`, `Foo 1`, & `Foo 2`.
+- Instantiate them as `My\Desired\Class`.
+- Save them to the database.
+- Return the results as an array.
 
 ## Creating your own factories
 Add a directory called `factories` in your desired location. In this directory you will put all your custom factory files. If you create a file called, post.php, page.php or term.php it will overwrite the default factories used by Faktory. This is perfectly acceptable.
