@@ -35,15 +35,22 @@ class Post
      */
     public function save(): object
     {
-        $result = wp_insert_post($this);
+        $postData = get_object_vars($this);
 
-        if (is_integer($result)) {
-            $this->ID = $result;
-            return $this;
+        $result = wp_insert_post($postData, true);
 
+        if (is_wp_error($result)) {
+            throw new \Exception(
+                sprintf(
+                    'Faktory Post could not be saved to the database: %s',
+                    $result->get_error_message()
+                )
+            );
         }
 
-        throw new \Exception("Faktory Post could not be saved to the database.");
+        $this->ID = $result;
+
+        return $this;
     }
 
 }
