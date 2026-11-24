@@ -221,9 +221,10 @@ class FaktoryTests extends TestCase
     {
         $fnc = $this->getFunctionMock(__NAMESPACE__, "wp_insert_post");
         $fnc->expects($this->once())
-            ->willReturn(new \stdClass);
+            ->willReturn(new \WP_Error("mock_error", "Mock WordPress error"));
 
         $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("Mock WordPress error");
 
         Faktory::new()->save();
     }

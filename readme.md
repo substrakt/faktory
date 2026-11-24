@@ -8,7 +8,7 @@ To create the fake data, Faktory uses [Rando-PHP](https://github.com/Hi-Folks/ra
 
 ## Creating a factory
 ```php
-$f = Faktory::create(string $factory = "page", array|object $args = []);
+$f = Faktory::create(string $factory = "page", array $args = []);
 ```
 
 ### Parameters
@@ -20,7 +20,8 @@ The name of the factory to create. The casing must match the casing used for the
 - post
 
 #### args
-An array of elements to overwrite the default values. The array for the page and post factories is passed to [`wp_insert_post`](https://developer.wordpress.org/reference/functions/wp_insert_post/) to save the post to the database.
+
+An array of elements to overwrite the default values. `Faktory::create()` and `Faktory::new()` accept an array (not an object). For page and post factories, the array is passed to [`wp_insert_post`](https://developer.wordpress.org/reference/functions/wp_insert_post/) to save the post to the database.
 ```php
 $args = [
     "comment_count"     => "",
@@ -308,6 +309,15 @@ If you are having to do alot of `meta_input` work inside your tests, consider mo
 We'd love you to help out with Faktory and no contribution is too small. We particularly welcome pull requests from anyone who is looking to make their first open source contribution.
 
 Fork the Faktory and create a pull request with your changes or features in. Of course, you'll need to include some tests if the changes are to the code.
+
+### Running the tests
+
+Install the Composer dependencies and run the PHPUnit suite:
+```sh
+composer install
+vendor/bin/phpunit --configuration phpunit.xml --coverage-text --colors=never
+```
+This is the test command used by the GitLab CI job. PHPUnit is declared as a development dependency in `composer.json`.
 
 ### Ideas for pull requests
 - Factory for Users
