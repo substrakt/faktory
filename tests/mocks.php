@@ -1,4 +1,25 @@
 <?php
+
+if (!function_exists('is_wp_error')) {
+    function is_wp_error($thing) {
+        return $thing instanceof \WP_Error;
+    }
+}
+
+if (!class_exists('WP_Error')) {
+    class WP_Error {
+        private string $message;
+
+        public function __construct(string $code = '', string $message = '', mixed $data = null) {
+            $this->message = $message;
+        }
+
+        public function get_error_message(): string {
+            return $this->message;
+        }
+    }
+}
+
 /**
  * This file and the functions inside it exist to prevent the deprecation
  * notices in PHP8 that occur when null is passed into md5().

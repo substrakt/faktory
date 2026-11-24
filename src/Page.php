@@ -40,7 +40,7 @@ class Page
 
         $result = wp_insert_post($postData, true);
 
-        if (is_wp_error($result)) {
+        if (\is_wp_error($result)) {
             throw new \Exception(
                 sprintf(
                     'Faktory Post could not be saved to the database: %s',
